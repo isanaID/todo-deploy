@@ -15,38 +15,24 @@ func GetAllCategories(c *gin.Context) {
 	var (
 		result gin.H
 	)
+	id := IdUser(c)
 
-	categories, err := repository.GetAllCategories(database.DbConnection)
+	categories, err := repository.GetAllCategories(database.DbConnection, id)
 
-	if err != nil {
-		result = gin.H{
-			"result": nil,
-		}
-	} else {
-		result = gin.H{
-			"result": categories,
-			"count":  len(categories),
-		}
+	type response struct {
+		Name string `json:"name"`
+		CreatedAt string `json:"created_at"`
+		UpdatedAt string `json:"updated_at"`
 	}
 
-	c.JSON(http.StatusOK, result)
-}
-
-func GetCategory(c *gin.Context) {
-	var (
-		result gin.H
-	)
-
-	id, _ := strconv.Atoi(c.Param("id"))
-	category, err := repository.GetCategory(database.DbConnection, id)
-
 	if err != nil {
 		result = gin.H{
 			"result": nil,
 		}
 	} else {
 		result = gin.H{
-			"result": category,
+			"data": categories,
+			"count":  len(categories),
 		}
 	}
 
@@ -61,6 +47,17 @@ func CreateCategory(c *gin.Context) {
 		panic(err)
 	}
 
+	if category.Name == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"message": "Category name is required",
+		})
+		return
+	}
+
+	id := IdUser(c)
+
+	category.UserId = int64(id)
 	category.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 	category.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
 
@@ -70,7 +67,8 @@ func CreateCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Category created successfully",
+		"status": "success",
+		"message": "Category Created Successfully",
 	})
 }
 
@@ -92,6 +90,7 @@ func UpdateCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
 		"message": "Category updated successfully",
 	})
 }
@@ -108,6 +107,7 @@ func DeleteCategory(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
 		"message": "Category deleted successfully",
 	})
 }

@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -17,8 +16,7 @@ func GetAllTasks(c *gin.Context) {
 		result gin.H
 	)
 
-	id, _ := strconv.Atoi(c.Query("user_id"))
-	fmt.Println(id)
+	id := IdUser(c)
 
 	tasks, err := repository.GetAllTasks(database.DbConnection, id)
 
@@ -65,6 +63,9 @@ func CreateTask(c *gin.Context) {
 		panic(err)
 	}
 
+	id := IdUser(c)
+
+	task.User_id = int64(id)
 	task.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 	task.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
 

@@ -13,7 +13,6 @@ func CategoryRouter(router *gin.Engine) {
 	category.Use(middlewares.AuthMiddleware(database.DbConnection))
 	{
 		category.GET("/", controllers.GetAllCategories)
-		category.GET("/:id", controllers.GetCategory)
 		category.POST("/", controllers.CreateCategory)
 		category.PUT("/:id", controllers.UpdateCategory)
 		category.DELETE("/:id", controllers.DeleteCategory)

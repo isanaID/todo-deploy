@@ -5,10 +5,10 @@ import (
 	"todo/structs"
 )
 
-func GetAllStatusTasks(db *sql.DB) (statusTasks []structs.StatusTask, err error) {
-	sql := `SELECT * FROM status_task`
+func GetAllStatusTasks(db *sql.DB, id int) (statusTasks []structs.StatusTask, err error) {
+	sql := `SELECT * FROM status_task WHERE user_id=$1`
 
-	rows, err := db.Query(sql)
+	rows, err := db.Query(sql, id)
 
 	if err != nil {
 		return
@@ -16,7 +16,7 @@ func GetAllStatusTasks(db *sql.DB) (statusTasks []structs.StatusTask, err error)
 
 	for rows.Next() {
 		var statusTask structs.StatusTask
-		err = rows.Scan(&statusTask.ID, &statusTask.Status, &statusTask.CreatedAt, &statusTask.UpdatedAt)
+		err = rows.Scan(&statusTask.ID, &statusTask.UserId, &statusTask.Status, &statusTask.CreatedAt, &statusTask.UpdatedAt)
 
 		if err != nil {
 			return
@@ -41,9 +41,9 @@ func GetStatusTask(db *sql.DB, id int) (statusTask structs.StatusTask, err error
 }
 
 func CreateStatusTask(db *sql.DB, statusTask structs.StatusTask) (err error) {
-	sql := `INSERT INTO status_task (status, created_at, updated_at) VALUES ($1, $2, $3)`
+	sql := `INSERT INTO status_task (status, user_id, created_at, updated_at) VALUES ($1, $2, $3, $4)`
 
-	errs := db.QueryRow(sql, statusTask.Status, statusTask.CreatedAt, statusTask.UpdatedAt)
+	errs := db.QueryRow(sql, statusTask.Status, statusTask.UserId, statusTask.CreatedAt, statusTask.UpdatedAt)
 
 	return errs.Err()
 }

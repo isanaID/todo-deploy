@@ -32,8 +32,9 @@ var PrivateKey = []byte("secret")
 func (u *User) GenerateToken() (string, error) {
 	claims := jwt.MapClaims{
 		"user_id": u.ID,
+		"email":   u.Email,
+		"name":    u.Name,
 		"exp":     time.Now().Add(time.Hour * 24).Unix(),
-		"iss":     "isana",
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return token.SignedString(PrivateKey)

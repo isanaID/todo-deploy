@@ -16,7 +16,9 @@ func GetAllStatusTasks(c *gin.Context) {
 		result gin.H
 	)
 
-	statusTasks, err := repository.GetAllStatusTasks(database.DbConnection)
+	id := IdUser(c)
+
+	statusTasks, err := repository.GetAllStatusTasks(database.DbConnection, id)
 
 	if err != nil {
 		result = gin.H{
@@ -61,6 +63,17 @@ func CreateStatusTask(c *gin.Context) {
 		panic(err)
 	}
 
+	if statusTask.Status == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status": "error",
+			"message": "Status name is required",
+		})
+		return
+	}
+
+	id := IdUser(c)
+
+	statusTask.UserId = int64(id)
 	statusTask.CreatedAt = time.Now().Format("2006-01-02 15:04:05")
 	statusTask.UpdatedAt = time.Now().Format("2006-01-02 15:04:05")
 
@@ -69,7 +82,10 @@ func CreateStatusTask(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Status created successfully",})
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"message": "Status created successfully",
+})
 }
 
 func UpdateStatusTask(c *gin.Context) {
@@ -89,7 +105,10 @@ func UpdateStatusTask(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Status updated successfully",})
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"message": "Status updated successfully",
+	})
 }
 
 func DeleteStatusTask(c *gin.Context) {
@@ -104,5 +123,8 @@ func DeleteStatusTask(c *gin.Context) {
 		panic(err)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Status deleted successfully",})
+	c.JSON(http.StatusOK, gin.H{
+		"status": "success",
+		"message": "Status deleted successfully",
+	})
 }

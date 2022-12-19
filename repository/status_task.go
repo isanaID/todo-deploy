@@ -16,7 +16,7 @@ func GetAllStatusTasks(db *sql.DB, id int) (statusTasks []structs.StatusTask, er
 
 	for rows.Next() {
 		var statusTask structs.StatusTask
-		err = rows.Scan(&statusTask.ID, &statusTask.UserId, &statusTask.Status, &statusTask.CreatedAt, &statusTask.UpdatedAt)
+		err = rows.Scan(&statusTask.ID, &statusTask.Status, &statusTask.UserId, &statusTask.CreatedAt, &statusTask.UpdatedAt)
 
 		if err != nil {
 			return
